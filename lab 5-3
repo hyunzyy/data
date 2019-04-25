@@ -1,0 +1,51 @@
+import tensorflow.contrib.eager as tfe       # tensorflow를 갖고온다.
+tf.enable_eager_execution()                  # eager 모드로 실행하기 위해서 eager_execution을 실행한다.
+dataset = tf.data.Dataset.form_tensor)_slices((x_train, y_train)).batch(len(x_train))   
+    # tf를 통해 원하는 x값과 y값을 실제 x의 길이만큼 batch로 학습하고 dataset으로 가져온다.
+w = tf.Variable(tf.zeros([2,1]), name='weight')  # shape을 2행 1열로 만든다.
+b = tf.Variable(tf.zeros([1]), name='bias')      # shape을 bias 값을 원하는 값으로 만든다.
+
+
+def logistic_regression(featrues):
+  hypothesis = tf.div(1., 1, + tf.exp(tf.matmul(features, W) + b)
+  # W(x) + b에 대한 linear한 값을 exp(sigmoid funtion) 시그모이드 함수를 구해 logistic regression 위한 hypothesis 만든다.
+return hypothesis
+def loss_fn(features, labels):
+  hypothesis = logistic_regression(features)
+  cost = -tf.reduce_mean(label * tf.log(loss_fn(hypothesis) + (1 - labels) * tf.log(1 - hypothesis))
+return cost   
+# hypothesis를 넣은 값에 label을 넣으면 cost을 구할 수 있다.
+def grad(hypothesis, features, labels):
+    with tf.GradientTape() as tape:
+        loss_value = loss_fn(hypothesis, labels)
+#가설을 통해 나온 값을 loss를 통해 확인한다.
+    return tape.gradient(loss_value, [W,b])
+# gradient를 통해 모델값을 바꿔간다.
+optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.01)
+# GradientDescentOptimizer를 통해서 optimizer 선언한다.
+for step in range(EPOCHS):
+# EPOCHS만큼 함수를 돌린다.
+    for features, labels  in tfe.Iterator(dataset):
+#위에서 dataset을 가져오고 x에 features, y에 labels를 넣어서 모델을 만든다.
+        grads = grad(logistic_regression(features), features, labels)
+#나온 x값과 y값을 가설에 대입히면 학습을 위한 Gradient값이 나온다. 
+        optimizer.apply_gradients(grads_and_vars=zip(grads,[W,b]))
+#optimizer를 통해 minimize한 것을 구한다. 이 과정을 통해 w와 d가 계속 새롭게 된다.
+
+
+        if step % 100 == 0:
+            print("Iter: {}, Loss: {:.4f}".format(step, loss_fn(logistic_regression(features),features,labels)))
+#100번마다 우리가 원하는 interration값과 loss값이 줄어드는 것을 출력한다.
+
+def accuracy_fn(hypothesis, labels):
+#가설과 함수를 비교한다.
+    predicted = tf.cast(hypothesis > 0.5, dtype=tf.float32)
+#0.5를 통해 예측값이 출력된다.
+    accuracy = tf.reduce_mean(tf.cast(tf.equal(predicted, labels), dtype=tf.int32))
+#예측값과 실제값이 같은지를 accuracy을 통해 출력한다
+    return accuracy
+
+test_acc = accuracy_fn(logistic_regression(x_test),y_test)
+#test acc에 x_test와 y_test를 넣어 정확한지 출력한다.
+
+ 
