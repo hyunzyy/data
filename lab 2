@@ -1,0 +1,68 @@
+import tensorflow as tf
+import numpy as np
+tf.enable_eager_execution()
+
+# Data
+x_data = [1, 2, 3, 4, 5]
+y_data = [1, 2, 3, 4, 5]
+# x데이터는 입력, y데이터는 출력. 입력과 출력이 같다. 데이터를 간단한 모델로 만들면 입력과W와 b값 예측 가능.
+
+# W, b initialize
+W = tf.Variable(2.9)
+b = tf.Variable(0.5)
+# variable로 정의. 각각 2.9와 0.5를 초기 값으로 지정. 
+(초기값은 임의의 값)
+
+hypothesis = W * x_data + b
+# 가설함수
+cost = tf.reduce_mean(tf.square(hypothesis - y_data))
+# cost 함수를 그대로 입력
+
+
+# W, b update
+for i in range(100):
+# for. w,b값을 위해서 100번을 수행하라는 뜻.
+    # Gradient descent
+    with tf.GradientTape() as tape:
+        hypothesis = W * x_data + b
+        cost = tf.reduce_mean(tf.square(hypothesis - y_data))
+
+# 텐서플로우에서는gradienttape로 구현. (w, b의 변화를 tape에 기록.
+   
+ W_grad, b_grad = tape.gradient(cost, [W, b])
+
+# Tape에 Gradient method를 호출. 변수들 기울기를 구함. W_grad는 w의 기울기이고 b_grad는 b의 기울기.
+  
+
+
+
+
+  W.assign_sub(learning_rate * W_grad)
+    b.assign_sub(learning_rate * b_grad)
+
+# w와b값이 업데이트하는 부분. Learning rate는 gradient 값(기울기)을 어느정도 반영할 건지 결정하는 역할.
+*A.assign_sub(B)-> A=A-B
+   
+ if i % 10 == 0:
+      print("{:5}|{:10.4f}|{:10.4f}|{:10.6f}".format(i, W.numpy(), b.numpy(), cost))
+
+# w와b값,cost값이 어떻게 변해가는가. 10번에 한 번씩 출력하라는 의미.
+
+print()
+
+# predict
+print(W * 5 + b)
+print(W * 2.5 + b)
+
+    0|    2.4520|    0.3760| 45.660004
+   10|    1.1036|    0.0034|  0.206336
+   20|    1.0128|   -0.0209|  0.001026
+   30|    1.0065|   -0.0218|  0.000093
+   40|    1.0059|   -0.0212|  0.000083
+   50|    1.0057|   -0.0205|  0.000077
+   60|    1.0055|   -0.0198|  0.000072
+   70|    1.0053|   -0.0192|  0.000067
+   80|    1.0051|   -0.0185|  0.000063
+   90|    1.0050|   -0.0179|  0.000059
+
+# 결과: w값은 1로 수렴, b값은 거의 0으로 수렴. Cost는 100번이상 실행했을 때 0으로 감.(=우리의 모델이 실제값 예측 맞게함. cost값이 작으면 작을수록 좋음.)
